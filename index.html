@@ -117,13 +117,13 @@
         if (isEncryptionMode) {
           encryptionTextarea.disabled = true;
           decryptionTextarea.disabled = false;
-          encryptionLabel.textContent = "Dekripsi";
-          decryptionLabel.textContent = "Enkripsi";
+          // encryptionLabel.textContent = "Dekripsi";
+          // decryptionLabel.textContent = "Enkripsi";
         } else {
           encryptionTextarea.disabled = false;
           decryptionTextarea.disabled = true;
-          encryptionLabel.textContent = "Enkripsi";
-          decryptionLabel.textContent = "Dekripsi";
+          // encryptionLabel.textContent = "Enkripsi";
+          // decryptionLabel.textContent = "Dekripsi";
         }
 
         isEncryptionMode = !isEncryptionMode;
@@ -132,8 +132,7 @@
       function encrypt() {
         const asciiMap = {
           "A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6, "H": 7, "I": 8, "J": 9, "K": 10, "L": 11, "M": 12,
-          "N": 13, "O": 14, "P": 15, "Q": 16, "R": 17, "S": 18, "T": 19, "U": 20, "V": 21, "W": 22, "X": 23, "Y": 24, "Z": 25,
-          " ": 26, ",": 27, "!": 28, "?": 29
+          "N": 13, "O": 14, "P": 15, "Q": 16, "R": 17, "S": 18, "T": 19, "U": 20, "V": 21, "W": 22, "X": 23, "Y": 24, "Z": 25
         };
         const reverseAsciiMap = Object.fromEntries(Object.entries(asciiMap).map(([k, v]) => [v, k]));
 
@@ -177,7 +176,7 @@
             for (let col = 0; col < 2; col++) {
               result[row] += keyMatrix[row][col] * chunk[col];
             }
-            result[row] %= 30;
+            result[row] %= 26;
           }
 
           encryptedNumbers.push(...result);
@@ -193,8 +192,7 @@
       function decrypt() {
         const asciiMap = {
           "A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6, "H": 7, "I": 8, "J": 9, "K": 10, "L": 11, "M": 12,
-          "N": 13, "O": 14, "P": 15, "Q": 16, "R": 17, "S": 18, "T": 19, "U": 20, "V": 21, "W": 22, "X": 23, "Y": 24, "Z": 25,
-          " ": 26, ",": 27, "!": 28, "?": 29
+          "N": 13, "O": 14, "P": 15, "Q": 16, "R": 17, "S": 18, "T": 19, "U": 20, "V": 21, "W": 22, "X": 23, "Y": 24, "Z": 25
         };
         const reverseAsciiMap = Object.fromEntries(Object.entries(asciiMap).map(([k, v]) => [v, k]));
 
@@ -220,7 +218,7 @@
         ];
 
         // Calculate the determinant of the key matrix
-        const determinant = (keyMatrix[0][0] * keyMatrix[1][1] - keyMatrix[0][1] * keyMatrix[1][0]) % 30;
+        const determinant = (keyMatrix[0][0] * keyMatrix[1][1] - keyMatrix[0][1] * keyMatrix[1][0]) % 26;
         if (determinant === 0) {
           alert("Key matrix is not invertible.");
           return;
@@ -236,13 +234,13 @@
           }
           return 1;
         };
-        const invDet = modInverse(determinant, 30);
+        const invDet = modInverse(determinant, 26);
 
         // Calculate the inverse key matrix
         const inverseKeyMatrix = [
-          [(keyMatrix[1][1] * invDet) % 30, (-keyMatrix[0][1] * invDet) % 30],
-          [(-keyMatrix[1][0] * invDet) % 30, (keyMatrix[0][0] * invDet) % 30]
-        ].map(row => row.map(num => ((num % 30) + 30) % 30));
+          [(keyMatrix[1][1] * invDet) % 26, (-keyMatrix[0][1] * invDet) % 26],
+          [(-keyMatrix[1][0] * invDet) % 26, (keyMatrix[0][0] * invDet) % 26]
+        ].map(row => row.map(num => ((num % 26) + 26) % 26));
 
         // Convert message to numbers
         const messageNumbers = [];
@@ -260,7 +258,7 @@
             for (let col = 0; col < 2; col++) {
               result[row] += inverseKeyMatrix[row][col] * chunk[col];
             }
-            result[row] %= 30;
+            result[row] %= 26;
           }
 
           decryptedNumbers.push(...result);

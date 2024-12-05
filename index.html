@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enkripsi Matriks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              poppins: "Poppins",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-slate-200 text-slate-900 font-poppins m-auto">
+    <main
+      class="max-w-screen-lg h-2/3 mx-auto my-5 p-8 border-blue-600 border-2 rounded-md bg-slate-50"
+    >
+      <h1 id="main-title" class="text-5xl text-center mb-8 font-bold"> Matriks</h1>
+      <form action="" class="flex gap-4">
+        <div class="flex flex-col gap-2">
+          <label id="encryption-label" for="encryption" class="font-bold text-2xl">Enkripsi</label>
+          <textarea
+            name="encryption"
+            id="encryption"
+            class="w-80 border border-slate-300 rounded-md"
+            rows="10"
+          ></textarea>
+          <input
+            id="generate-button"
+            class="py-2 px-4 rounded-md bg-blue-600 font-bold text-slate-100 cursor-pointer"
+            type="submit"
+            value="Generate"
+          />
+        </div>
+        <button id="switch" type="button">
+          <svg
+            fill="currentColor"
+            class="w-10 h-10 self-center"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 512 512"
+          >
+            <path
+              d="M0 224c0 17.7 14.3 32 32 32s32-14.3 32-32c0-53 43-96 96-96l160 0 0 32c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-9.2-9.2-22.9-11.9-34.9-6.9S320 19.1 320 32l0 32L160 64C71.6 64 0 135.6 0 224zm512 64c0-17.7-14.3-32-32-32s-32 14.3-32 32c0 53-43 96-96 96l-160 0 0-32c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6l0-32 160 0c88.4 0 160-71.6 160-160z"
+            />
+          </svg>
+        </button>
+        <div class="flex flex-col gap-2">
+          <label id="decryption-label" for="decryption" class="font-bold text-2xl">Dekripsi</label>
+          <textarea
+            name="decryption"
+            id="decryption"
+            class="w-80 border border-slate-300 rounded-md"
+            rows="10"
+            disabled
+          ></textarea>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-2"></div>
+          <label for="matrix" class="font-bold text-2xl">Matriks 2x2</label>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              name="matrix-00"
+              id="matrix-00"
+              class="w-20 border border-slate-300 rounded-md text-center"
+              placeholder=""
+            />
+            <input
+              type="text"
+              name="matrix-01"
+              id="matrix-01"
+              class="w-20 border border-slate-300 rounded-md text-center"
+              placeholder=""
+            />
+          </div>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              name="matrix-10"
+              id="matrix-10"
+              class="w-20 border border-slate-300 rounded-md text-center"
+              placeholder=""
+            />
+            <input
+              type="text"
+              name="matrix-11"
+              id="matrix-11"
+              class="w-20 border border-slate-300 rounded-md text-center"
+              placeholder=""
+            />
+          </div>
+        </div>
+      </form>
+    </main>
+    <script>
+      let isEncryptionMode = true;
+
+      document.getElementById("switch").addEventListener("click", function (event) {
+        event.preventDefault();
+        const encryptionTextarea = document.getElementById("encryption");
+        const decryptionTextarea = document.getElementById("decryption");
+        const encryptionLabel = document.getElementById("encryption-label");
+        const decryptionLabel = document.getElementById("decryption-label");
+
+        if (isEncryptionMode) {
+          encryptionTextarea.disabled = true;
+          decryptionTextarea.disabled = false;
+          encryptionLabel.textContent = "Dekripsi";
+          decryptionLabel.textContent = "Enkripsi";
+        } else {
+          encryptionTextarea.disabled = false;
+          decryptionTextarea.disabled = true;
+          encryptionLabel.textContent = "Enkripsi";
+          decryptionLabel.textContent = "Dekripsi";
+        }
+
+        isEncryptionMode = !isEncryptionMode;
+      });
+
+      function encrypt() {
+        const asciiMap = {
+          "A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6, "H": 7, "I": 8, "J": 9, "K": 10, "L": 11, "M": 12,
+          "N": 13, "O": 14, "P": 15, "Q": 16, "R": 17, "S": 18, "T": 19, "U": 20, "V": 21, "W": 22, "X": 23, "Y": 24, "Z": 25,
+          " ": 26, ",": 27, "!": 28, "?": 29
+        };
+        const reverseAsciiMap = Object.fromEntries(Object.entries(asciiMap).map(([k, v]) => [v, k]));
+
+        // Get input message and key matrix
+        const message = document.getElementById("encryption").value.toUpperCase();
+        const keyInput = [
+          document.getElementById("matrix-00").value,
+          document.getElementById("matrix-01").value,
+          document.getElementById("matrix-10").value,
+          document.getElementById("matrix-11").value
+        ].map(Number);
+
+        // Validate input
+        if (keyInput.length !== 4) {
+          alert("Key matrix must be a 2x2 matrix (4 values).");
+          return;
+        }
+
+        // Convert key input into 2x2 matrix
+        const keyMatrix = [
+          keyInput.slice(0, 2),
+          keyInput.slice(2, 4)
+        ];
+
+        // Pad the message if not a multiple of 2
+        const paddedMessage = message + "X".repeat((2 - (message.length % 2)) % 2);
+
+        // Convert message to numbers
+        const messageNumbers = [];
+        for (const char of paddedMessage) {
+          messageNumbers.push(asciiMap[char]);
+        }
+
+        // Encrypt the message using Hill Cipher
+        const encryptedNumbers = [];
+        for (let i = 0; i < messageNumbers.length; i += 2) {
+          const chunk = messageNumbers.slice(i, i + 2);
+          const result = [0, 0]; // Encrypted chunk
+
+          for (let row = 0; row < 2; row++) {
+            for (let col = 0; col < 2; col++) {
+              result[row] += keyMatrix[row][col] * chunk[col];
+            }
+            result[row] %= 30;
+          }
+
+          encryptedNumbers.push(...result);
+        }
+
+        // Convert encrypted numbers back to characters
+        const encryptedMessage = encryptedNumbers.map(num => reverseAsciiMap[num]).join("");
+
+        // Display the result
+        document.getElementById("decryption").value = encryptedMessage;
+      }
+
+      function decrypt() {
+        const asciiMap = {
+          "A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6, "H": 7, "I": 8, "J": 9, "K": 10, "L": 11, "M": 12,
+          "N": 13, "O": 14, "P": 15, "Q": 16, "R": 17, "S": 18, "T": 19, "U": 20, "V": 21, "W": 22, "X": 23, "Y": 24, "Z": 25,
+          " ": 26, ",": 27, "!": 28, "?": 29
+        };
+        const reverseAsciiMap = Object.fromEntries(Object.entries(asciiMap).map(([k, v]) => [v, k]));
+
+        // Get input message and key matrix
+        const message = document.getElementById("decryption").value.toUpperCase();
+        const keyInput = [
+          document.getElementById("matrix-00").value,
+          document.getElementById("matrix-01").value,
+          document.getElementById("matrix-10").value,
+          document.getElementById("matrix-11").value
+        ].map(Number);
+
+        // Validate input
+        if (keyInput.length !== 4) {
+          alert("Key matrix must be a 2x2 matrix (4 values).");
+          return;
+        }
+
+        // Convert key input into 2x2 matrix
+        const keyMatrix = [
+          keyInput.slice(0, 2),
+          keyInput.slice(2, 4)
+        ];
+
+        // Calculate the determinant of the key matrix
+        const determinant = (keyMatrix[0][0] * keyMatrix[1][1] - keyMatrix[0][1] * keyMatrix[1][0]) % 30;
+        if (determinant === 0) {
+          alert("Key matrix is not invertible.");
+          return;
+        }
+
+        // Calculate the modular inverse of the determinant
+        const modInverse = (a, m) => {
+          a = ((a % m) + m) % m;
+          for (let x = 1; x < m; x++) {
+            if ((a * x) % m === 1) {
+              return x;
+            }
+          }
+          return 1;
+        };
+        const invDet = modInverse(determinant, 30);
+
+        // Calculate the inverse key matrix
+        const inverseKeyMatrix = [
+          [(keyMatrix[1][1] * invDet) % 30, (-keyMatrix[0][1] * invDet) % 30],
+          [(-keyMatrix[1][0] * invDet) % 30, (keyMatrix[0][0] * invDet) % 30]
+        ].map(row => row.map(num => ((num % 30) + 30) % 30));
+
+        // Convert message to numbers
+        const messageNumbers = [];
+        for (const char of message) {
+          messageNumbers.push(asciiMap[char]);
+        }
+
+        // Decrypt the message using Hill Cipher
+        const decryptedNumbers = [];
+        for (let i = 0; i < messageNumbers.length; i += 2) {
+          const chunk = messageNumbers.slice(i, i + 2);
+          const result = [0, 0]; // Decrypted chunk
+
+          for (let row = 0; row < 2; row++) {
+            for (let col = 0; col < 2; col++) {
+              result[row] += inverseKeyMatrix[row][col] * chunk[col];
+            }
+            result[row] %= 30;
+          }
+
+          decryptedNumbers.push(...result);
+        }
+
+        const decryptedMessage = decryptedNumbers.map(num => reverseAsciiMap[num]).join("");
+
+        document.getElementById("encryption").value = decryptedMessage;
+      }
+
+      document.getElementById("generate-button").addEventListener("click", function (event) {
+        event.preventDefault();
+        if (isEncryptionMode) {
+          encrypt();
+        } else {
+          decrypt();
+        }
+      });
+    </script>
+  </body>
+</html>
